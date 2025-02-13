@@ -1,0 +1,23 @@
+{
+  "name": "sharkgame",
+  "version": "1.0.0",
+  "main": "game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tristanradeka/SharkGame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tristanradeka/SharkGame/issues"
+  },
+  "homepage": "https://github.com/Tristanradeka/SharkGame#readme",
+  "description": "",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "path": "^0.12.7"
+  }
+}
