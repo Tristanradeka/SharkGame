@@ -16,6 +16,12 @@ var playedAlready = false;
 //bool for checking if in score menu
 var scoreMenuBool = false;
 
+//bool for checking whether scores have been fetched already (so it only fetches one array)
+var fetched = false;
+
+//array for high scores
+var highScores;
+
 
 /*--------------Finish Line------------
 shark is the "player controllable" Object
@@ -212,7 +218,7 @@ function menu()
         currentState = game;
     }
 
-    if(tab)
+    if(s)
     {
         currentState = scoreMenu;
     }
@@ -222,7 +228,8 @@ function menu()
         ctx.textAlign = `center`;
         ctx.fillStyle = `yellow`;
         ctx.font = `32px Arial`
-        ctx.fillText(`Are you hungry? Press 'enter' to play!`,c.width/2,c.height/2)
+        ctx.fillText(`Are you hungry? Press 'Enter' to play!`,c.width/2,c.height/2)
+        ctx.fillText(`Press 'S' to view high scores`,c.width/2, c.height/2 + 35)
     ctx.restore();
 
     init()
@@ -274,15 +281,11 @@ function lose() {
     ctx.font = `40px Arial`;
     ctx.fillText(`You died!`, c.width / 2, c.height / 2 - 100);
     ctx.strokeText(`You died!`, c.width / 2, c.height / 2 - 100);
-    ctx.fillText(`Are you hungry? Press 'Enter' to try again!`, c.width / 2, c.height / 2);
-    ctx.strokeText(`Are you hungry? Press 'Enter' to try again!`, c.width / 2, c.height / 2);
+    ctx.fillText(`Are you hungry? Press 'M' to return to menu!`, c.width / 2, c.height / 2);
+    ctx.strokeText(`Are you hungry? Press 'M' to return to menu!`, c.width / 2, c.height / 2);
     ctx.fillText(`Final Score: ${finalScore}`, c.width / 2, c.height / 2 + 75);
     ctx.strokeText(`Final Score: ${finalScore}`, c.width / 2, c.height / 2 + 75);
     ctx.restore();
-
-    // Prevent duplicate event listeners
-    document.removeEventListener("keydown", handleEnterKey);
-    document.addEventListener("keydown", handleEnterKey);
 
     // Only create input field and button if they don’t already exist
     if (!document.getElementById("playerNameInput")) {
@@ -316,29 +319,46 @@ function lose() {
             }
         });
     }
+
+    if(m)
+    {
+        removeUIElements();
+        currentState = menu;
+    }
 }
+
 
 function scoreMenu()
 {
-    //Set up score display
-}
-
-// Function to remove input field and button
-function removeUIElements() {
-    let nameInput = document.getElementById("playerNameInput");
-    let submitBtn = document.getElementById("submitButton");
-    
-    if (nameInput) nameInput.remove();
-    if (submitBtn) submitBtn.remove();
-}
-
-// Function to handle "Enter" key for restarting the game
-function handleEnterKey(event) {
-    if (event.key === "Enter") {
-        document.removeEventListener("keydown", handleEnterKey); // Remove event listener to prevent repeated calls
-        removeUIElements();  // Clean up UI elements
-        currentState = game; // Immediately switch state
+    if(!fetched)
+    {
+        //populate an array with the data fetched from fetchHighScores func
+        fetchHighScores();
+        fetched = true;
     }
+    if(m)
+    {
+        currentState = menu;
+    }
+
+    ctx.save();
+    ctx.textAlign = `center`;
+    ctx.fillStyle = `yellow`;
+    ctx.strokeStyle = `black`;
+    ctx.lineWidth = 2;
+    ctx.font = `40px Arial`;
+    ctx.fillText(`High Scores`, c.width / 2, 100);
+    ctx.strokeText(`High Scores`, c.width / 2, 100);
+    
+    // Display high scores
+    ctx.font = `30px Arial`;
+    for (let i = 0; i < highScores.length; i++) {
+        let scoreEntry = `${i + 1}. ${highScores[i].name}: ${highScores[i].score}`;
+        ctx.fillText(scoreEntry, c.width / 2, 150 + i * 40);
+        ctx.strokeText(scoreEntry, c.width / 2, 150 + i * 40);
+    }
+
+    ctx.restore();
 }
 
 //The game
@@ -581,7 +601,20 @@ function submitScore(name, score) {
     .catch(error => console.error("Error submitting score:", error));
 }
 
-function cleanupUI() {
-    if (playerNameInput) document.body.removeChild(playerNameInput);
-    if (submitButton) document.body.removeChild(submitButton);
+// Function to remove input field and button
+function removeUIElements() {
+    let nameInput = document.getElementById("playerNameInput");
+    let submitBtn = document.getElementById("submitButton");
+    
+    if (nameInput) nameInput.remove();
+    if (submitBtn) submitBtn.remove();
+}
+
+function fetchHighScores() {
+    fetch("http://localhost:5000/highscores")
+    .then(response => response.json())
+    .then(scores => {
+        highScores = scores;
+    })
+    .catch(error => console.error("Error fetching high scores:", error));
 }

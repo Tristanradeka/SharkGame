@@ -8,6 +8,7 @@ var d = false;
 var m = false;
 var enter = false;
 var tab = false;
+var esc = false;
 
 /*---Key Press Code-----------*/
 
@@ -20,6 +21,8 @@ function press(e)
     if(e.keyCode == 68){d = true;}
     if(e.keyCode == 13){enter = true;}
     if(e.keyCode == 9){tab = true;}
+    if(e.keyCode == 27){esc = true;}
+    if(e.keyCode == 77){m = true;}
 }
 
 /*---Key Release Code-----------*/
@@ -32,4 +35,6 @@ function release(e)
     if(e.keyCode == 68){d = false;}
     if(e.keyCode == 13){enter = false;}
     if(e.keyCode == 9){tab = false;}
+    if(e.keyCode == 27){esc = false;}
+    if(e.keyCode == 77){m = false;}
 }
